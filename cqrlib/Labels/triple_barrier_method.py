@@ -105,7 +105,7 @@ def tri_barrier(
             raise ValueError("t1 cannot have NaTs, pls use vertical_bar func provided.")
         elif isinstance(t1.dtype, (str, float, int, list, dict, tuple)):
             raise ValueError("t1 must be pd.Series with datetime values, pls use vertical_bar func provided.")
-        elif t1.dtype != "datetime64[ns]":
+        elif not pd.api.types.is_datetime64_any_dtype(t1.dtype):
             raise ValueError("t1 must be pd.Series with datetime, pls use vertical_bar func provided.")
     elif t1 == False:
         warnings.warn("\nNot Recommended: No vertical barrier provided")
@@ -172,12 +172,12 @@ def vert_barrier(data: pd.Series, events: pd.DatetimeIndex, period: str = "days"
         raise ValueError("data must be pandas series with DatetimeIndex i.e. close price series")
     elif isinstance(data.squeeze().dtype, (str, list, dict, tuple)):
         raise ValueError("data dtype must be integer or float value i.e. 1.0, 2")
-    elif data.index.dtype != "datetime64[ns]":
+    elif not pd.api.types.is_datetime64_any_dtype(data.index.dtype):
         raise ValueError("data index does not contain datetime")
 
     if isinstance(events, (int, float, str, list, dict, tuple)):
         raise ValueError("events must be pandas DatetimeIndex")
-    elif events.dtype != "datetime64[ns]":
+    elif not pd.api.types.is_datetime64_any_dtype(events.dtype):
         raise ValueError("events must be pandas DatetimeIndex")
 
     if isinstance(period, (pd.Series, np.ndarray, list, int, float)):
