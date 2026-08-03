@@ -1,55 +1,74 @@
+import warnings
+
 import numpy as np
 import pandas as pd
-#from numba import njit 
+
+# from numba import njit
+
 
 def cs_filter(data: pd.Series, limit: float):
-    '''
+    """
     params: pd.Series => time series input price only accepts ndarray, list, pd.series
     params: pd.Series => threshold before logging datetime index
-    
+
     AFML pg 39 snippet 2.4
     This func will give absolute return based on input price.
     As for limit, use original price series to derive standard deviation as an estimate.
     This is to ensure stationary series is homoscedastic.
-    
+
+    limit must be in the same units as the price diffs (points). If you have a
+    return-based estimate (e.g. d_vol), scale it by the price level first:
+        cs_filter(data, limit=d_vol.mean() * data.mean())
+
     Logic is the same, but kindly go through the code before using it.
-    
+
     WARNING!!: DO NOT EVER CHANGE data.diff() into data.apply(np.log).diff(), use only absolute price.
-    
+
     np.log(data) does allow memory preservation but! that is not what we are looking for.
-    
+
     In addition, np.log(data) contains additive properties. This will distort your data structure.
-    
+
     The main use use for this func is to ensure your data structure is homoscedastic as much as possible, which is pivotal for mean-reversion strategy.
     IF you change this line, 99.99% you will only get a Heteroscedastic data structure, no matter what you do at a later stage.
-    
+
     This will haunt you at the later stage as you develop your mean-reversion strategy.
-    
+
     The above claim is tested and proven (sort of..)
-    
-    This filter will ensure your data structure maintain a good data structural shape , 
+
+    This filter will ensure your data structure maintain a good data structural shape ,
     which is key to mean-reversion strategy and to ensure your data structure is NOT too random.
-    
+
     If you are not sure  what I mean pls go read up on "time-series stationarity" and run a white test using both log price and abs price.
-    
+
     REPEAT 10 times: "you will not change this func"
-    
+
     This filter return datatimeindex only.
-    '''
+    """
     if isinstance(data, (str, float, int)):
-        raise ValueError('Data must be numpy ndarray or pandas series!')
+        raise ValueError("Data must be numpy ndarray or pandas series!")
     elif data.isnull().values.any():
-        raise ValueError('Data contain NaNs, kindly review data input!')
+        raise ValueError("Data contain NaNs, kindly review data input!")
 
     if isinstance(limit, (list, np.ndarray, pd.Series)):
         limit = float(limit.mean())
-        UserWarning('Func does not accept numpy array, convert limit to mean value as estimate')
+        warnings.warn("Func does not accept numpy array, convert limit to mean value as estimate")
     elif isinstance(limit, (int, float)):
         limit = float(limit)
-        UserWarning('Convert limit to float value as estimate')
+        warnings.warn("Convert limit to float value as estimate")
     else:
-        raise ValueError('Limit is neither numpy ndarray, pandas series nor float!')
-    
+        raise ValueError("Limit is neither numpy ndarray, pandas series nor float!")
+
+    # limit is compared against price-point diffs; warn when it looks like a
+    # return (tiny relative to the typical bar-to-bar move) so the filter
+    # doesn't silently degenerate to "every bar is an event".
+    diff_scale = data.diff().abs().median()
+    if limit < diff_scale * 0.01:
+        warnings.warn(
+            "limit is ~100x smaller than the typical bar-to-bar price move; it looks "
+            "like a RETURN (e.g. d_vol.mean()). cs_filter compares against price-point "
+            "diffs, so pass a price-scaled threshold, e.g. d_vol.mean() * data.mean()."
+        )
+
     idx, _up, _dn = [], 0, 0
     diff = data.diff()
     for i in diff.index[1:]:
