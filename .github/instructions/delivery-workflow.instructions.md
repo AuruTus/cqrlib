@@ -1,3 +1,6 @@
+---
+description: "Use when planning, executing, validating, or concluding any coding task in this repo. Defines the plan → execute → validate → conclude cycle and when to preserve knowledge."
+---
 # Delivery Workflow
 
 Follow a structured **plan → execute → validate → conclude** cycle for every task.
@@ -22,6 +25,6 @@ Follow a structured **plan → execute → validate → conclude** cycle for eve
 - Confirm the deliverable is ready for the next step (e.g., notebook execution).
 
 ## Knowledge Preservation
-- If any skill, pattern, or information from this task could be useful in **future sessions or for other agents**, record it in `knowledge-base/`.
-- Create a focused file with a clear, explicit name (see `information-code-isolation.md`).
+- If any skill, pattern, or information from this task could be useful in **future sessions or for other agents**, record it in `.github/instructions/`.
+- Create a focused file with a clear, explicit name (see `information-code-isolation.instructions.md`).
 - This ensures reusable knowledge persists beyond the current task.

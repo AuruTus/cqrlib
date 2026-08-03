@@ -1,3 +1,6 @@
+---
+description: "Use when writing commit messages. Enforces conventional commit prefixes (feat, fix, docs, refactor, chore, test, perf) and subject-line formatting rules."
+---
 # Git Commit Conventions
 
 Use structured prefix rules for all commit messages.

@@ -1,3 +1,6 @@
+---
+description: "Use when authoring any committed content (docs, scripts, notebooks, guides). Prohibits absolute host paths; requires placeholders and clearing notebook outputs before committing."
+---
 # No Sensitive Paths in Committed Content
 
 Generated docs, scripts, and guides must **never** contain absolute host paths

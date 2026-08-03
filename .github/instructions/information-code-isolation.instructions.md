@@ -1,3 +1,6 @@
+---
+description: "Use when organizing knowledge, config, or documentation vs executable code. Keeps information separate from code, one concern per file, and config out of docs."
+---
 # Information-Code Isolation
 
 Keep **information (knowledge, config, documentation)** separate from **executable code** to avoid coupling and improve maintainability.
@@ -5,7 +8,7 @@ Keep **information (knowledge, config, documentation)** separate from **executab
 ## Principles
 
 ### Cross-kind isolation (knowledge vs code)
-- **Knowledge goes in `knowledge-base/`** — workflow notes, environment setup, conventions. Static, read-only, version-controlled.
+- **Knowledge goes in `.github/instructions/`** - workflow notes, environment setup, conventions. Static, read-only, version-controlled.
 - **Code stays in `scripts/`, notebooks, etc.** — executable logic that can be imported, tested, and run.
 - **No cross-references from code into `knowledge-base/`** — code must not import or read knowledge files at runtime.
 
@@ -21,6 +24,6 @@ Keep **information (knowledge, config, documentation)** separate from **executab
 ## Benefits
 
 - Changing a workflow note never breaks a running script.
-- New team members can read `knowledge-base/` without touching code.
+- New team members can read `.github/instructions/` without touching code.
 - Code stays portable — no dependency on non-executable documentation files.
 - Small, well-named files are discoverable and self-explanatory.
