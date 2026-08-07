@@ -101,7 +101,7 @@ def unit_root(data: pd.Series):
     params: data => close price series
     '''
     adf_ = (adfuller(data, maxlag = 1, regression='c', autolag = None)[1])
-    kpss_ = (kpss(data, regression='ct', lags= None)[1])
+    kpss_ = kpss(data, regression="ct", nlags="auto")[1]
     if (adf_ <= 0.05 and kpss_ >= 0.05):
         p("\nADF & KPSS: Weak evidence for stationary\n")
     elif adf_ <= 0.05:
