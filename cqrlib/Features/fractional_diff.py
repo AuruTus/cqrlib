@@ -27,7 +27,7 @@ def fracDiff(data: pd.Series, d: float, thres: float = 1e-2):
     skip = w_[w_ > thres].shape[0]
     df = {}
     for name in data.columns:
-        seriesF, df_ = data[[name]].fillna(method="ffill").dropna(), pd.Series(index=data.index, dtype=float)
+        seriesF, df_ = data[[name]].ffill().dropna(), pd.Series(index=data.index, dtype=float)
         for iloc in range(skip, seriesF.shape[0]):
             loc = seriesF.index[iloc]
             if not np.isfinite(data.loc[loc, name]):
@@ -64,7 +64,7 @@ def fracDiff_FFD(data: pd.Series, d: float, thres: float = 1e-2):
     w, df = getWeights_FFD(d, thres), {}
     width = len(w) - 1
     for name in data.columns:
-        seriesF, df_ = data[[name]].fillna(method="ffill").dropna(), pd.Series(index=data.index, dtype=float)
+        seriesF, df_ = data[[name]].ffill().dropna(), pd.Series(index=data.index, dtype=float)
         for iloc in range(width, seriesF.shape[0]):
             loc0, loc1 = seriesF.index[iloc - width], seriesF.index[iloc]
             if not np.isfinite(data.loc[loc1, name]):
