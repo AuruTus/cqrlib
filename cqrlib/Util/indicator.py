@@ -59,3 +59,33 @@ def side_pick(data: pd.DataFrame):
         elif data["close"].iloc[i] <= data["lower"].iloc[i]:
             data.loc[idx, "side"] = 1
     return data
+
+
+def get_ma_crossing_signals(
+    close: pd.Series, fast_window: int = 5, slow_window: int = 20
+) -> pd.Series:
+    """
+    Dual moving-average crossing signals (for AFML main model output).
+
+    :param close: Close price series.
+    :param fast_window: Window of the fast moving average.
+    :param slow_window: Window of the slow moving average.
+    :return: Series of crossing-event timestamps with the side at each event (1 long / -1 short).
+    """
+    # 1. Fast and slow moving averages (swap .rolling for .ewm(span=...).mean() to use EMA)
+    fast_ma = close.rolling(window=fast_window).mean()
+    slow_ma = close.rolling(window=slow_window).mean()
+
+    # 2. Position side by MA comparison
+    side = pd.Series(np.nan, index=close.index)
+    side[fast_ma > slow_ma] = 1.0  # long regime
+    side[fast_ma < slow_ma] = -1.0  # short regime
+
+    # 3. Crossing events: side changed versus the previous bar
+    cross_events = side.diff().fillna(0) != 0
+
+    # 4. Keep the side at crossing events only
+    signals = side[cross_events].dropna()
+    signals.name = "side"
+
+    return signals
